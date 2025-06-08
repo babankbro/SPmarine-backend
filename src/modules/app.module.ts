@@ -7,6 +7,7 @@ import { DatabaseModule } from '@/modules//database.module';
 import { OrderModule } from '@/modules/order.module';
 import { StationModule } from '@/modules/station.module';
 import { TugboatModule } from '@/modules/tugboat.module';
+import { CostModule } from '@/modules/cost.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { TugboatModule } from '@/modules/tugboat.module';
     OrderModule,
     StationModule,
     TugboatModule,
+    CostModule,
   ],
   controllers: [],
   providers: [],
