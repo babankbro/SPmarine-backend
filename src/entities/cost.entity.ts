@@ -1,29 +1,25 @@
-// SPmarine-backend/src/entities/cost.entity.ts
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, PrimaryColumn } from 'typeorm';
-import { Tugboat } from './tugboat.entity';
-import { Order } from './order.entity';
-
+import { Entity, Column, PrimaryColumn } from 'typeorm';
 
 @Entity('Cost')
 export class Cost {
-  @PrimaryColumn()
-  TugboatId: string;
+  @PrimaryColumn({ type: 'varchar', length: 255 })
+  public tugboatId: string;
 
-  @PrimaryColumn()
-  OrderId: string;
+  @PrimaryColumn({ type: 'varchar', length: 255 })
+  public orderId: string;
 
-  @Column('float')
-  Time: number;
+  @Column({ type: 'float' })
+  public time: number;
 
-  @Column('float')
-  Distance: number;
+  @Column({ type: 'float' })
+  public distance: number;
 
-  @Column('float')
-  ConsumptionRate: number;
+  @Column({ type: 'float' })
+  public consumptionRate: number;
 
-  @Column('float')
-  Cost: number;
+  @Column({ type: 'float' })
+  public cost: number;
 
-  @Column('float')
-  TotalLoad: number;
+  @Column({ type: 'float' })
+  public totalLoad: number;
 }

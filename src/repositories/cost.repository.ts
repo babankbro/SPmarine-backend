@@ -1,51 +1,30 @@
-// SPmarine-backend/src/repositories/cost.repository.ts
-import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { Cost } from '../entities/cost.entity';
+
+import { Cost } from '@/entities/cost.entity';
 
 @Injectable()
 export class CostRepository {
   constructor(
     @InjectRepository(Cost)
-    private costRepository: Repository<Cost>,
+    private readonly entities: Repository<Cost>,
   ) {}
 
-  async findAll(): Promise<Cost[]> {
-    // return await this.costRepository.find({
-    //   relations: ['tugboat', 'order'],
-    // });
-
-    return await this.costRepository.find();
-
+  public async findAll(): Promise<Cost[]> {
+    return await this.entities.find();
   }
 
-  async findById(id: string): Promise<Cost | null> {
-    // Since you're using a composite primary key (TugboatId, OrderId),
-    // You can't look up a record by a single "id" field anymore.
-    // Instead, you need to parse the id or use a different approach:
-  
-    // Option 1: If your ID is in the format "tugboatId-orderId"
-    const [tugboatId, orderId] = id.split('-');
-    return await this.costRepository.findOne({
-      where: { 
-        TugboatId: tugboatId,
-        OrderId: orderId
-      }
-    });
+  public async findByTugboat(id: string): Promise<Cost[] | null> {
+    const ret = await this.entities.findBy({ tugboatId: id });
+
+    return ret;
   }
 
-  async findByTugboat(tugboatId: string): Promise<Cost[]> {
-    return await this.costRepository.find({
-      where: { TugboatId: tugboatId },
-      relations: ['order'],
-    });
-  }
+  public async findByOrder(id: string): Promise<Cost[]> {
+    const ret = await this.entities.findBy({ orderId: id });
+    if (!ret) throw new NotFoundException();
 
-  async findByOrder(orderId: string): Promise<Cost[]> {
-    return await this.costRepository.find({
-      where: { OrderId: orderId },
-      relations: ['tugboat'],
-    });
+    return ret;
   }
 }
