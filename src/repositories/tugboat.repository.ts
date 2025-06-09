@@ -1,8 +1,5 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  ConflictException,
-  Injectable,
-} from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import * as fastcsv from 'fast-csv';
 import { Readable } from 'stream';
@@ -80,8 +77,7 @@ export class TugboatRepository {
     });
   }
 
-  public async updateTugboat(id: string, body: {}) {
-  }
+  public async updateTugboat(id: string, body: {}) {}
 
   public async removeById(id: string): Promise<void> {
     if (!(await this.entities.findOneBy({ id: id })))

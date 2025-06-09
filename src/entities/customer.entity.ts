@@ -3,11 +3,14 @@ import { Entity, Column, PrimaryColumn } from 'typeorm';
 @Entity({ name: 'Customer' })
 export class Customer {
   @PrimaryColumn({ type: 'varchar', length: 255 })
-  id: string;
+  public id: string;
 
   @Column({ type: 'varchar', length: 255 })
-  name: string;
+  public name: string;
 
   @Column({ type: 'varchar', length: 255 })
-  email: string;
+  public email: string;
+
+  @Column({ type: 'varchar', length: 255 })
+  public address: string;
 }

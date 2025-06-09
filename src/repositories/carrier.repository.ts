@@ -1,5 +1,5 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 
 import { Carrier } from '@/entities/carrier.entity';
@@ -13,5 +13,12 @@ export class CarrierRepository {
 
   public async getCarriers(): Promise<Carrier[]> {
     return this.entities.find();
+  }
+
+  public async getCarrierById(id: string): Promise<Carrier | null> {
+    const ret = this.entities.findOneBy({ id: id });
+    if (!ret) throw new NotFoundException();
+
+    return ret;
   }
 }

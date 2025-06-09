@@ -1,4 +1,10 @@
-import { Controller, Get, HttpStatus, HttpException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  HttpException,
+  Param,
+} from '@nestjs/common';
 
 import { CustomerService } from '@/services/customer.service';
 
@@ -10,6 +16,21 @@ export class CustomerController {
   public async getCustomers() {
     try {
       return this.service.getCustomers();
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          response: e.message ?? 'Bad Request',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @Get(':id')
+  public async getCustomerById(@Param('id') id: string) {
+    try {
+      return this.service.getCustomerById(id);
     } catch (e) {
       throw new HttpException(
         {

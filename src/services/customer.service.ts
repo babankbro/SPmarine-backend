@@ -11,6 +11,10 @@ export class CustomerService {
     return await this.repository.getCustomers();
   }
 
+  public async getCustomerById(id: string) {
+    return await this.repository.getCustomerById(id);
+  }
+
   /* public async upload(buffer: Buffer): Promise<Barge[]> {
     return await this.repository.upload(buffer);
   } */

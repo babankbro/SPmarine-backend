@@ -14,7 +14,7 @@ import * as path from 'path';
       entities: [path.join(__dirname, '/../**/*.entity.{js,ts}')],
       ssl: {
         // Enable SSL if required
-        rejectUnauthorized: false // Use this only for development
+        rejectUnauthorized: false, // Use this only for development
       },
       extra: {
         // Additional MySQL driver options

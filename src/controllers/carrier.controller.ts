@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 
 import { CarrierService } from '@/services/carrier.service';
 import { Carrier } from '@/entities/carrier.entity';
@@ -10,5 +10,10 @@ export class CarrierController {
   @Get('')
   public getCarriers() {
     return this.service.getCarriers();
+  }
+
+  @Get(':id')
+  public async getCarrierById(@Param('id') id: string) {
+    return this.service.getCarrierById(id);
   }
 }

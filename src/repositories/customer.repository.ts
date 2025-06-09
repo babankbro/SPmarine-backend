@@ -1,5 +1,5 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 
 import { Customer } from '@/entities/customer.entity';
@@ -17,5 +17,12 @@ export class CustomerRepository {
    */
   public async getCustomers(): Promise<Customer[]> {
     return this.entities.find();
+  }
+
+  public async getCustomerById(id: string): Promise<Customer | null> {
+    const ret = await this.entities.findOneBy({ id: id });
+    if (!ret) throw new NotFoundException();
+
+    return ret;
   }
 }

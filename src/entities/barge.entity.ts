@@ -3,35 +3,35 @@ import { Entity, PrimaryColumn, Column } from 'typeorm';
 @Entity({ name: 'Barge' })
 export class Barge {
   @PrimaryColumn({ type: 'varchar', length: 255 })
-  id: string;
+  public id: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  name: string;
+  public name: string;
 
   @Column({ type: 'float', nullable: true })
-  weight: number;
+  public weight: number;
 
   @Column({ type: 'float', nullable: true })
-  capacity: number;
+  public capacity: number;
 
   @Column({ type: 'float', nullable: true })
-  latitude: number;
+  public latitude: number;
 
   @Column({ type: 'float', nullable: true })
-  longitude: number;
+  public longitude: number;
 
   @Column({ type: 'enum', enum: ['SEA', 'RIVER'], nullable: true })
-  waterStatus: 'SEA' | 'RIVER';
+  public waterStatus: 'SEA' | 'RIVER';
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  stationId: string;
+  public stationId: string;
 
   @Column({ type: 'float', nullable: true })
-  distanceKm: number;
+  public distanceKm: number;
 
   @Column({ type: 'float', nullable: true })
-  setupTime: number;
+  public setupTime: number;
 
   @Column({ type: 'datetime', nullable: true })
-  readyDatetime: Date;
+  public readyDatetime: Date;
 }
