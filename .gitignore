@@ -12,6 +12,11 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
+# PKG managent
+bun.lock
+package-lock.json
+yarn.lock
+
 # OS
 .DS_Store
 
