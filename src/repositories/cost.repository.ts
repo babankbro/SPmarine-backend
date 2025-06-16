@@ -15,8 +15,20 @@ export class CostRepository {
     return await this.entities.find();
   }
 
+  public async findById(id: string) {
+    const [tugboat, order] = id.split("-");
+    const ret = await this.entities.findOne({ where: {
+        tugboatId: tugboat,
+        orderId: order
+    }});
+    if (!ret) throw new NotFoundException();
+
+    return ret;
+  }
+
   public async findByTugboat(id: string): Promise<Cost[] | null> {
     const ret = await this.entities.findBy({ tugboatId: id });
+    if (!ret) throw new NotFoundException();
 
     return ret;
   }

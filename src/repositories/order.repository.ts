@@ -1,5 +1,5 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import * as fastcsv from 'fast-csv';
 import { Readable } from 'stream';
@@ -19,6 +19,13 @@ export class OrderRepository {
    */
   public async getOrder() {
     return this.entities.find();
+  }
+
+  public async updateOrder(id: string, body: Order) {
+    const exists = await this.entities.findOneBy({ id: id });
+    if (!exists) throw new NotFoundException();
+
+    await this.entities.update(id, body);
   }
 
   /**

@@ -21,4 +21,11 @@ export class CarrierRepository {
 
     return ret;
   }
+
+  public async updateCarrier(id: string, body: Carrier) {
+    const exists = await this.entities.findOneBy({ id: id });
+    if (!exists) throw new NotFoundException();
+
+    await this.entities.update(id, body);
+  }
 }

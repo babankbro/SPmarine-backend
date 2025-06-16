@@ -10,6 +10,10 @@ export class CostService {
     return await this.repository.findAll();
   }
 
+  public async findById(id: string) {
+    return await this.repository.findById(id);
+  }
+
   public async findByTugboat(
     id: string,
   ): Promise<ReturnType<CostRepository['findByTugboat']>> {

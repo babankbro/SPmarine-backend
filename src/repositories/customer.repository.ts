@@ -25,4 +25,11 @@ export class CustomerRepository {
 
     return ret;
   }
+
+  public async updateCustomer(id: string, body: Customer) {
+    const exists = await this.entities.findOneBy({ id: id });
+    if (!exists) throw new NotFoundException();
+
+    await this.entities.update(id, body);
+  }
 }

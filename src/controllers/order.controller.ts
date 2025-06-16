@@ -6,6 +6,9 @@ import {
   UseInterceptors,
   HttpStatus,
   HttpException,
+  Put,
+  Param,
+  Body,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 
@@ -43,6 +46,23 @@ export class OrderController {
       const data = await this.service.upload(csv.buffer);
 
       return { success: true, data: data };
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          response: e.message ?? 'Bad Request',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @Put(':id')
+  public async updateOrder(@Param('id') id: string, @Body() body: Order) {
+    try {
+      await this.service.updateOrder(id, body);
+
+      return { message: '', status: HttpStatus.OK };
     } catch (e) {
       throw new HttpException(
         {

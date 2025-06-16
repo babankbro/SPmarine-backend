@@ -16,15 +16,33 @@ export class CostController {
   @Get()
   public async findAll(): Promise<Cost[]> {
     try {
-      console.log('Backend findAll called');
       const costs = await this.serivce.findAll();
-      console.log(`Returning ${costs.length} cost records`);
 
       return costs;
-    } catch (error) {
+    } catch (e) {
       throw new HttpException(
-        `Failed to fetch costs: ${error.message || 'Unknown error'}`,
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        {
+          status: HttpStatus.BAD_REQUEST,
+          response: e.message ?? 'Bad Request',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @Get(':id')
+  public async findOne(@Param("id") id: string) {
+    try {
+        const ret = await this.serivce.findById(id);
+    
+        return ret;
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          response: e.message ?? 'Bad Request',
+        },
+        HttpStatus.BAD_REQUEST,
       );
     }
   }
@@ -35,10 +53,13 @@ export class CostController {
   ): Promise<Cost[] | null> {
     try {
       return await this.serivce.findByTugboat(tugboatId);
-    } catch (error) {
+    } catch (e) {
       throw new HttpException(
-        'Failed to fetch costs for tugboat',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        {
+          status: HttpStatus.BAD_REQUEST,
+          response: e.message ?? 'Bad Request',
+        },
+        HttpStatus.BAD_REQUEST,
       );
     }
   }
@@ -47,10 +68,13 @@ export class CostController {
   public async findByOrder(@Param('orderId') orderId: string): Promise<Cost[]> {
     try {
       return await this.serivce.findByOrder(orderId);
-    } catch (error) {
+    } catch (e) {
       throw new HttpException(
-        'Failed to fetch costs for order',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        {
+          status: HttpStatus.BAD_REQUEST,
+          response: e.message ?? 'Bad Request',
+        },
+        HttpStatus.BAD_REQUEST,
       );
     }
   }

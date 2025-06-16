@@ -14,4 +14,8 @@ export class CarrierService {
   public async getCarrierById(id: string) {
     return this.repository.getCarrierById(id);
   }
+
+  public async updateCarrier(id: string, body: Carrier) {
+    return this.repository.updateCarrier(id, body);
+  }
 }

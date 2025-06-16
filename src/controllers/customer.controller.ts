@@ -4,9 +4,12 @@ import {
   HttpStatus,
   HttpException,
   Param,
+  Put,
+  Body,
 } from '@nestjs/common';
 
 import { CustomerService } from '@/services/customer.service';
+import { Customer } from '@/entities/customer.entity';
 
 @Controller('/v1/customers')
 export class CustomerController {
@@ -31,6 +34,23 @@ export class CustomerController {
   public async getCustomerById(@Param('id') id: string) {
     try {
       return this.service.getCustomerById(id);
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          response: e.message ?? 'Bad Request',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @Put(':id')
+  public async updateCustomer(@Param('id') id: string, @Body() body: Customer) {
+    try {
+      await this.service.updateCustomer(id, body);
+
+      return { message: '', status: HttpStatus.OK };
     } catch (e) {
       throw new HttpException(
         {

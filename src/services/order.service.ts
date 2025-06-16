@@ -14,4 +14,8 @@ export class OrderService {
   public async upload(buffer: Buffer): Promise<Order[]> {
     return await this.repository.upload(buffer);
   }
+
+  public async updateOrder(id: string, body: Order) {
+    return await this.repository.updateOrder(id, body);
+  }
 }
