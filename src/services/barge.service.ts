@@ -19,6 +19,18 @@ export class BargeService {
     return await this.repository.createNewBarge(barge);
   }
 
+  public async updateBarge(id: string, barge: Barge) {
+    return await this.repository.updateBarge(id, barge);
+  }
+
+  public async deleteById(id: string) {
+    return await this.repository.deleteById(id);
+  }
+
+  public async deleteMultiId(id: string[]) {
+    return await this.repository.deleteMultiId(id);
+  }
+
   /* public async upload(buffer: Buffer): Promise<Barge[]> {
     return await this.repository.upload(buffer);
   } */
