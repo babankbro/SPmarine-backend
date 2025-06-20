@@ -1,5 +1,9 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
 
 import { Station } from '@/entities/station.entity';
@@ -27,5 +31,12 @@ export class StationRepository {
     }
 
     throw new ConflictException(`${station.id} already exists.`);
+  }
+
+  public async updateStation(id: string, body: Station) {
+    const exists = await this.entities.findOneBy({ id: id });
+    if (!exists) throw new NotFoundException();
+
+    await this.entities.update(id, body);
   }
 }

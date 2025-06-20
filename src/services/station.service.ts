@@ -18,4 +18,8 @@ export class StationService {
   public async createNewStation(station: Station) {
     return await this.repository.createNewStation(station);
   }
+
+  public async updateStation(id: string, body: Station) {
+    return await this.repository.updateStation(id, body);
+  }
 }

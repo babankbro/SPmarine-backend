@@ -2,6 +2,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   ConflictException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import * as fastcsv from 'fast-csv';
@@ -83,7 +84,11 @@ export class TugboatRepository {
     });
   }
 
-  public async updateTugboat(id: string, body: {}) {
+  public async updateTugboat(id: string, body: Tugboat) {
+    const exists = await this.entities.findOneBy({ id: id });
+    if (!exists) throw new NotFoundException();
+
+    await this.entities.update(id, body);
   }
 
   public async removeById(id: string): Promise<void> {

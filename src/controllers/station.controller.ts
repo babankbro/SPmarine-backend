@@ -6,6 +6,7 @@ import {
   HttpException,
   Param,
   Body,
+  Put,
 } from '@nestjs/common';
 
 import { StationService } from '@/services/station.service';
@@ -50,6 +51,23 @@ export class StationController {
     try {
       await this.service.createNewStation(station);
       return { message: 'successfully', status: HttpStatus.OK };
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          response: e.message ?? 'Bad Request',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @Put(':id')
+  public async updateStation(@Param('id') id: string, @Body() body: Station) {
+    try {
+      await this.service.updateStation(id, body);
+
+      return { message: '', status: HttpStatus.OK };
     } catch (e) {
       throw new HttpException(
         {

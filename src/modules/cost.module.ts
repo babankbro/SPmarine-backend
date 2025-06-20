@@ -7,9 +7,7 @@ import { CostService } from '../services/cost.service';
 import { CostRepository } from '../repositories/cost.repository';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Cost]),
-  ],
+  imports: [TypeOrmModule.forFeature([Cost])],
   controllers: [CostController],
   providers: [CostService, CostRepository],
   exports: [CostService],

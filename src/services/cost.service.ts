@@ -1,28 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import { CostRepository } from '../repositories/cost.repository';
-import { Cost } from '../entities/cost.entity';
+
+import { CostRepository } from '@/repositories/cost.repository';
 
 @Injectable()
 export class CostService {
-  constructor(private readonly costRepository: CostRepository) {}
+  constructor(private readonly repository: CostRepository) {}
 
-  async findAll(): Promise<Cost[]> {
-    return await this.costRepository.findAll();
+  public async findAll(): Promise<ReturnType<CostRepository['findAll']>> {
+    return await this.repository.findAll();
   }
 
-  async findById(id: string): Promise<Cost> {
-    const cost = await this.costRepository.findById(id);
-    if (!cost) {
-      throw new Error('Cost not found');
-    }
-    return cost;
+  public async findById(id: string) {
+    return await this.repository.findById(id);
   }
 
-  async findByTugboat(tugboatId: string): Promise<Cost[]> {
-    return await this.costRepository.findByTugboat(tugboatId);
+  public async findByTugboat(
+    id: string,
+  ): Promise<ReturnType<CostRepository['findByTugboat']>> {
+    return await this.repository.findByTugboat(id);
   }
 
-  async findByOrder(orderId: string): Promise<Cost[]> {
-    return await this.costRepository.findByOrder(orderId);
+  public async findByOrder(
+    id: string,
+  ): Promise<ReturnType<CostRepository['findByOrder']>> {
+    return await this.repository.findByOrder(id);
   }
 }

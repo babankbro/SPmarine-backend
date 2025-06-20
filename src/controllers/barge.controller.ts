@@ -2,14 +2,13 @@ import {
   Controller,
   Get,
   Post,
-  UploadedFile,
-  UseInterceptors,
+  Put,
   HttpStatus,
   HttpException,
   Param,
   Body,
+  Delete,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 
 import { BargeService } from '@/services/barge.service';
 import { Barge } from '@/entities/barge.entity';
@@ -64,18 +63,12 @@ export class BargeController {
     }
   }
 
-  /* @Post('upload')
-  @UseInterceptors(FileInterceptor('file'))
-  public async uploadCsv(
-    @UploadedFile() csv: Express.Multer.File,
-  ): Promise<{ success: boolean; data: Order[] }> {
-    if (!csv)
-      throw new HttpException('No file uploaded', HttpStatus.BAD_REQUEST);
-
+  @Put('id')
+  public async updateBarge(@Param('id') id: string, @Body() barge: Barge) {
     try {
-      const data = await this.service.upload(csv.buffer);
+      await this.service.updateBarge(id, barge);
 
-      return { success: true, data: data };
+      return { message: 'Successfully updated', status: HttpStatus.OK };
     } catch (e) {
       throw new HttpException(
         {
@@ -85,5 +78,39 @@ export class BargeController {
         HttpStatus.BAD_REQUEST,
       );
     }
-  } */
+  }
+
+  @Delete(':id')
+  public async deleteById(@Param('id') id: string) {
+    try {
+      await this.service.deleteById(id);
+
+      return { message: '', status: HttpStatus.OK };
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          response: e.message ?? 'Bad Request',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @Delete()
+  public async deleteMultiId(@Body('id') id: string[]) {
+    try {
+      await this.service.deleteMultiId(id);
+
+      return { message: 'successfully deleted', status: HttpStatus.OK };
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          response: e.message ?? 'Bad Request',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
 }

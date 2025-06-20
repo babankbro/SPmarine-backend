@@ -4,32 +4,50 @@ import { Station } from './station.entity'; // Make sure to create this Station 
 @Entity({ name: 'Barge' })
 export class Barge {
   @PrimaryColumn({ type: 'varchar', length: 255 })
-  id: string;
+  public id: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  name: string;
+  public name: string;
 
   @Column({ type: 'float', nullable: true })
-  weight: number;
+  public weight: number;
 
   @Column({ type: 'float', nullable: true })
-  capacity: number;
+  public capacity: number;
 
+<<<<<<< HEAD
+=======
+  @Column({ type: 'float', nullable: true })
+  public latitude: number;
+
+  @Column({ type: 'float', nullable: true })
+  public longitude: number;
+
+>>>>>>> b30a392322f66b3adc777beea54c6f69a0f4ffcd
   @Column({ type: 'enum', enum: ['SEA', 'RIVER'], nullable: true })
-  waterStatus: 'SEA' | 'RIVER';
+  public waterStatus: 'SEA' | 'RIVER';
 
   // Keep the original column for database compatibility
   @Column({ type: 'varchar', length: 255, nullable: true })
-  stationId: string;
+  public stationId: string;
 
+<<<<<<< HEAD
   // Add the relation to Station entity
   @ManyToOne(() => Station, station => station.barges)
   @JoinColumn({ name: 'stationId' }) // This tells TypeORM which column to use for the join
   station: Station;
+=======
+  @Column({ type: 'float', nullable: true })
+  public distanceKm: number;
+>>>>>>> b30a392322f66b3adc777beea54c6f69a0f4ffcd
 
   @Column({ type: 'float', nullable: true })
-  setupTime: number;
+  public setupTime: number;
 
   @Column({ type: 'datetime', nullable: true })
+<<<<<<< HEAD
   readyDatetime: Date; // Adding this as it was in the database schema
+=======
+  public readyDatetime: Date;
+>>>>>>> b30a392322f66b3adc777beea54c6f69a0f4ffcd
 }

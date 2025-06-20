@@ -27,7 +27,7 @@ export class TugboatService {
     return await this.repository.removeById(id);
   }
 
-  public async updateTugboat(id: string, body: {}) {
+  public async updateTugboat(id: string, body: Tugboat) {
     return await this.repository.updateTugboat(id, body);
   }
 }

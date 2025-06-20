@@ -94,13 +94,11 @@ export class TugboatController {
   }
 
   @Put(':id')
-  public async updateTugboat(
-    @Param('id') id: string,
-    @Body() body: {}
-  ) {
+  public async updateTugboat(@Param('id') id: string, @Body() body: Tugboat) {
     try {
+      await this.service.updateTugboat(id, body);
 
-      return { message: "", status: HttpStatus.OK };
+      return { message: '', status: HttpStatus.OK };
     } catch (e) {
       throw new HttpException(
         {

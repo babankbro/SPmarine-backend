@@ -1,5 +1,9 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
 
 import { Barge } from '@/entities/barge.entity';
@@ -32,5 +36,25 @@ export class BargeRepository {
     }
 
     throw new ConflictException(`${barge.id} already exists.`);
+  }
+
+  public async updateBarge(id: string, barge: Barge) {
+    const exists = await this.entities.findOneBy({ id: id });
+    if (!exists) throw new NotFoundException();
+
+    await this.entities.update(id, barge);
+  }
+
+  public async deleteById(id: string): Promise<void> {
+    const exists = await this.entities.findOneBy({ id: id });
+    if (!exists) throw new NotFoundException();
+
+    await this.entities.delete(id);
+  }
+
+  public async deleteMultiId(id: string[]): Promise<void> {
+    if (!id || !id.length) throw new Error('no IDs provided');
+
+    await this.entities.delete(id);
   }
 }
