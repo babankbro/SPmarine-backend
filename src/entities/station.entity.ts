@@ -1,4 +1,7 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, OneToMany } from 'typeorm';
+import { Barge } from './barge.entity';
+import { Tugboat } from './tugboat.entity';
+import { Order } from './order.entity';
 
 @Entity({ name: 'Station' })
 export class Station {
@@ -27,4 +30,16 @@ export class Station {
 
   // @Column({ type: 'varchar', length: 255 })
   // public customerId: string;
+  
+  @OneToMany(() => Barge, barge => barge.station)
+  barges: Barge[];
+  
+  @OneToMany(() => Tugboat, tugboat => tugboat.station)
+  tugboats: Tugboat[];
+
+  @OneToMany(() => Order, order => order.start_station)
+  start_stations: Order[];
+
+  @OneToMany(() => Order, order => order.dest_station)
+  dest_stations: Order[];
 }

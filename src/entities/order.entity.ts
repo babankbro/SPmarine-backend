@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Station } from './station.entity';
 
 @Entity({ name: 'Order' })
 export class Order {
@@ -13,6 +14,23 @@ export class Order {
 
   @Column({ type: 'varchar', length: 255 })
   destPoint: string;
+
+  @Column({ name: 'startStationId', type: 'varchar', length: 255, nullable: true })
+  startStationId: string;
+
+  // Column for destination station foreign key
+  @Column({ name: 'destStationId', type: 'varchar', length: 255, nullable: true })
+  destStationId: string;
+
+  // Relation to start station
+  @ManyToOne(() => Station, station => station.start_stations)
+  @JoinColumn({ name: 'startStationId', referencedColumnName: 'id' })
+  start_station: Station;
+
+  // Relation to destination station
+  @ManyToOne(() => Station, station => station.dest_stations)
+  @JoinColumn({ name: 'destStationId', referencedColumnName: 'id' })
+  dest_station: Station;
 
   @Column({ type: 'varchar', length: 255 })
   productName: string;

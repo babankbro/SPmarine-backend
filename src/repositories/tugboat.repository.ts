@@ -17,11 +17,16 @@ export class TugboatRepository {
   ) {}
 
   public async getTugboats() {
-    return this.entities.find();
+    return this.entities.find({
+      relations: ['station']
+    });
   }
 
   public async getTugboatById(id: string): Promise<Tugboat | null> {
-    return this.entities.findOneBy({ id: id });
+    return await this.entities.findOne({
+      where: { id: id },
+      relations: ['station']
+    });
   }
 
   public async createNewTugboat(tugboat: Tugboat) {
@@ -58,11 +63,9 @@ export class TugboatRepository {
             maxSpeed: parseFloat(row.MaxSpeed),
             engineRpm: parseFloat(row.EngineRpm),
             horsePower: parseFloat(row.HorsePower),
-            latitude: parseFloat(row.Latitude),
-            longitude: parseFloat(row.Longitude),
             waterStatus: row.WaterStatus as 'SEA' | 'RIVER',
-            distanceKm: parseFloat(row.DistanceKm),
             readyDatetime: new Date(row.ReadyDateTime),
+            station: { id: row.StationId },
           });
 
           if (process.env.DEBUG) {

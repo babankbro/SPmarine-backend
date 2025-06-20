@@ -12,11 +12,16 @@ export class BargeRepository {
   ) {}
 
   public async getBarges(): Promise<Barge[]> {
-    return this.entities.find();
+    return this.entities.find({
+      relations: ['station']
+    });
   }
 
   public async getBargeById(id: string): Promise<Barge | null> {
-    return await this.entities.findOneBy({ id: id });
+    return await this.entities.findOne({
+      where: { id: id },
+      relations: ['station']
+    });
   }
 
   public async createNewBarge(barge: Barge) {
