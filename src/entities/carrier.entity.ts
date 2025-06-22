@@ -8,9 +8,5 @@ export class Carrier {
   @Column({ type: 'varchar', length: 255 })
   public name: string;
 
-  @Column({ type: 'float', default: 0 })
-  public latitude: number;
 
-  @Column({ type: 'float', default: 0 })
-  public longitude: number;
 }

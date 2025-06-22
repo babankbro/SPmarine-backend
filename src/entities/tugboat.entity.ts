@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Station } from './station.entity'; // Make sure to create this Station entity if it doesn't exist
 
 @Entity('Tugboat')
 export class Tugboat {
@@ -32,18 +33,15 @@ export class Tugboat {
   @Column({ type: 'float', nullable: true })
   horsePower?: number;
 
-  @Column({ type: 'float', nullable: true })
-  latitude?: number;
-
-  @Column({ type: 'float', nullable: true })
-  longitude?: number;
-
   @Column({ type: 'enum', enum: ['SEA', 'RIVER'], default: 'SEA' })
   waterStatus: 'SEA' | 'RIVER';
 
-  @Column({ type: 'float', nullable: true })
-  distanceKm?: number;
-
   @Column({ type: 'datetime', nullable: true })
   readyDatetime?: Date;
+
+  // Add the relation to Station entity
+  @ManyToOne(() => Station, station => station.tugboats)
+  @JoinColumn({ name: 'stationId' }) // This tells TypeORM which column to use for the join
+  station: Station;
+  
 }
