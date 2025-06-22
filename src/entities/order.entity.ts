@@ -1,13 +1,19 @@
 import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Station } from './station.entity';
 
+export enum OrderType {
+  IMPORT = 'IMPORT',
+  EXPORT = 'EXPORT',
+}
+
+
 @Entity({ name: 'Order' })
 export class Order {
   @PrimaryColumn({ type: 'varchar', length: 255 })
   id: string;
 
-  @Column({ type: 'enum', enum: ['import', 'export'] })
-  type: 'import' | 'export';
+  @Column({ type: 'enum', enum: OrderType })
+  type: OrderType;
 
   @Column({ type: 'varchar', length: 255 })
   fromPoint: string;
