@@ -15,6 +15,21 @@ import {
 import { CustomerService } from '@/services/customer.service';
 import { Customer } from '@/entities/customer.entity';
 
+interface CreateCustomerDto {
+  id: string;
+  name: string;
+  email: string;
+  address: string;
+  stationIds?: string[];
+}
+
+interface UpdateCustomerDto {
+  name?: string;
+  email?: string;
+  address?: string;
+  stationIds?: string[];
+}
+
 @Controller('/v1/customers')
 export class CustomerController {
   constructor(private readonly service: CustomerService) {}
@@ -48,8 +63,21 @@ export class CustomerController {
   @Get(':id')
   public async getCustomerById(@Param('id') id: string) {
     try {
-      return this.service.getCustomerById(id);
+      const customer = await this.service.getCustomerById(id);
+      if (!customer) {
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_FOUND,
+            response: `Customer with ID ${id} not found`,
+          },
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return customer;
     } catch (e) {
+      if (e instanceof HttpException) {
+        throw e;
+      }
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,
@@ -61,12 +89,35 @@ export class CustomerController {
   }
 
   /**
-   * Create new customer
-   * @param body Customer data
+   * Create new customer with optional station associations
+   * @param body Customer data with optional station IDs
    */
   @Post()
-  public async createCustomer(@Body() body: Partial<Customer>) {
+  public async createCustomer(@Body() body: CreateCustomerDto) {
     try {
+      // Validate required fields
+      if (!body.id || !body.name || !body.email || !body.address) {
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            response: 'Missing required fields: id, name, email, address',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      // Check if customer ID already exists
+      const existingCustomer = await this.service.getCustomerById(body.id).catch(() => null);
+      if (existingCustomer) {
+        throw new HttpException(
+          {
+            status: HttpStatus.CONFLICT,
+            response: `Customer with ID ${body.id} already exists`,
+          },
+          HttpStatus.CONFLICT,
+        );
+      }
+
       const customer = await this.service.createCustomer(body);
       return { 
         message: 'Customer created successfully', 
@@ -74,6 +125,9 @@ export class CustomerController {
         data: customer 
       };
     } catch (e) {
+      if (e instanceof HttpException) {
+        throw e;
+      }
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,
@@ -85,12 +139,12 @@ export class CustomerController {
   }
 
   /**
-   * Update customer
+   * Update customer information and station associations
    * @param id Customer ID
    * @param body Customer data
    */
   @Put(':id')
-  public async updateCustomer(@Param('id') id: string, @Body() body: Partial<Customer>) {
+  public async updateCustomer(@Param('id') id: string, @Body() body: UpdateCustomerDto) {
     try {
       const customer = await this.service.updateCustomer(id, body);
       return { 
@@ -99,6 +153,9 @@ export class CustomerController {
         data: customer 
       };
     } catch (e) {
+      if (e instanceof HttpException) {
+        throw e;
+      }
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,
@@ -110,7 +167,7 @@ export class CustomerController {
   }
 
   /**
-   * Delete customer
+   * Delete customer and all station associations
    * @param id Customer ID
    */
   @Delete(':id')
@@ -122,6 +179,9 @@ export class CustomerController {
         status: HttpStatus.OK 
       };
     } catch (e) {
+      if (e instanceof HttpException) {
+        throw e;
+      }
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,
@@ -143,6 +203,16 @@ export class CustomerController {
     @Body('stationId') stationId: string
   ) {
     try {
+      if (!stationId) {
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            response: 'Station ID is required',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
       const customer = await this.service.addStationToCustomer(id, stationId);
       return { 
         message: 'Station added to customer successfully', 
@@ -150,6 +220,9 @@ export class CustomerController {
         data: customer 
       };
     } catch (e) {
+      if (e instanceof HttpException) {
+        throw e;
+      }
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,
@@ -178,6 +251,9 @@ export class CustomerController {
         data: customer 
       };
     } catch (e) {
+      if (e instanceof HttpException) {
+        throw e;
+      }
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,
