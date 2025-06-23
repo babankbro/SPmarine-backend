@@ -15,4 +15,5 @@ import { ScheduleRepository } from '@/repositories/schedule.repository';
   providers: [ScheduleService, ScheduleRepository],
   // exports: [ScheduleService, ScheduleRepository],
 })
+
 export class ScheduleModule {}

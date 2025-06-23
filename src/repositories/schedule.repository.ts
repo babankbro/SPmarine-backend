@@ -85,14 +85,3 @@ console.log(type_point)
 }
 
 
-
-
-// public async getSchedulesByTugboatAndOrderId(tugboatId: string, orderId: string): Promise<Schedule[]> {
-//   return this.entities.find({
-//     where: { 
-//       tugboat_id: tugboatId,
-//       order_id: orderId,
-//     },
-//     order: { enter_datetime: 'ASC' }
-//   });
-// }

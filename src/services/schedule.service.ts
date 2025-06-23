@@ -53,4 +53,3 @@ export class ScheduleService {
   public async getViewScheduleTypePoints(): Promise<ViewScheduleTypePoint[]> {
     return await this.repository.getViewScheduleTypePoints();
   }
-}

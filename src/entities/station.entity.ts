@@ -1,7 +1,8 @@
-import { Entity, Column, PrimaryColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryColumn, OneToMany, ManyToMany } from 'typeorm';
 import { Barge } from './barge.entity';
 import { Tugboat } from './tugboat.entity';
 import { Order } from './order.entity';
+import { Customer } from './customer.entity';
 
 @Entity({ name: 'Station' })
 export class Station {
@@ -42,4 +43,8 @@ export class Station {
 
   @OneToMany(() => Order, order => order.dest_station)
   dest_stations: Order[];
+
+  // New relationship with customers
+  @ManyToMany(() => Customer, customer => customer.stations)
+  public customers: Customer[];
 }
