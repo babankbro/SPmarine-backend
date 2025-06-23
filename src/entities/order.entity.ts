@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Station } from './station.entity';
+import { Customer } from './customer.entity';
 
 export enum OrderType {
   IMPORT = 'IMPORT',
@@ -37,6 +38,10 @@ export class Order {
   @ManyToOne(() => Station, station => station.dest_stations)
   @JoinColumn({ name: 'destStationId', referencedColumnName: 'id' })
   dest_station: Station;
+
+  @ManyToOne(() => Customer, customer => customer.address)
+  @JoinColumn({ name: 'destPoint', referencedColumnName: 'id' })
+  customer: Customer;
 
   @Column({ type: 'varchar', length: 255 })
   productName: string;
