@@ -8,6 +8,7 @@ import { OrderModule } from '@/modules/order.module';
 import { StationModule } from '@/modules/station.module';
 import { TugboatModule } from '@/modules/tugboat.module';
 import { CostModule } from '@/modules/cost.module';
+import { ScheduleModule } from '@/modules/schedule.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { CostModule } from '@/modules/cost.module';
     StationModule,
     TugboatModule,
     CostModule,
+    ScheduleModule,
   ],
   controllers: [],
   providers: [],
