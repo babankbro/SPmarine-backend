@@ -20,14 +20,14 @@ interface CreateCustomerDto {
   name: string;
   email: string;
   address: string;
-  stationIds?: string[];
+  stationId?: string;
 }
 
 interface UpdateCustomerDto {
   name?: string;
   email?: string;
   address?: string;
-  stationIds?: string[];
+  stationId?: string;
 }
 
 @Controller('/v1/customers')
@@ -139,27 +139,44 @@ export class CustomerController {
   }
 
   /**
-   * Update customer information and station associations
-   * @param id Customer ID
-   * @param body Customer data
+   * Update customer information and station assignment
    */
   @Put(':id')
   public async updateCustomer(@Param('id') id: string, @Body() body: UpdateCustomerDto) {
     try {
-      const customer = await this.service.updateCustomer(id, body);
+      console.log(`PUT /customers/${id} called with body:`, body);
+      
+      if (!id || typeof id !== 'string' || id.trim().length === 0) {
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            response: 'Invalid customer ID format',
+            error: 'INVALID_ID_FORMAT'
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const customer = await this.service.updateCustomer(id.trim(), body);
+      console.log('Customer updated successfully:', customer);
+      
       return { 
         message: 'Customer updated successfully', 
         status: HttpStatus.OK,
         data: customer 
       };
     } catch (e) {
+      console.error(`Error in updateCustomer for ID "${id}":`, e);
+      
       if (e instanceof HttpException) {
         throw e;
       }
+      
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,
           response: e.message ?? 'Bad Request',
+          error: 'UPDATE_CUSTOMER_ERROR'
         },
         HttpStatus.BAD_REQUEST,
       );
@@ -173,6 +190,7 @@ export class CustomerController {
   @Delete(':id')
   public async deleteCustomer(@Param('id') id: string) {
     try {
+      console.log(`DELETE /customers/${id} called`);
       await this.service.deleteCustomer(id);
       return { 
         message: 'Customer deleted successfully', 

@@ -12,7 +12,7 @@ export class CustomerStation {
   public stationId: string;
 
   // Relations
-  @ManyToOne(() => Customer, customer => customer.stations, {
+  @ManyToOne(() => Customer, customer => customer.station, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE'
   })

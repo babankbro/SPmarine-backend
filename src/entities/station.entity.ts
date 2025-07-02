@@ -45,6 +45,6 @@ export class Station {
   dest_stations: Order[];
 
   // New relationship with customers
-  @ManyToMany(() => Customer, customer => customer.stations)
+  @OneToMany(() => Customer, customer => customer.station)
   public customers: Customer[];
 }

@@ -22,11 +22,11 @@ export class CustomerRepository {
   public async getCustomers(): Promise<Customer[]> {
     return this.entities.find({
       relations: {
-        stations: true
+        station: true
       },
       order: {
         name: 'ASC',
-        stations: {
+        station: {
           name: 'ASC'
         }
       }
@@ -42,7 +42,7 @@ export class CustomerRepository {
     const customer = await this.entities.findOne({
       where: { id },
       relations: {
-        stations: true
+        station: true
       }
     });
     
@@ -61,10 +61,10 @@ export class CustomerRepository {
   public async getCustomersByStation(stationId: string): Promise<Customer[]> {
     return this.entities.find({
       relations: {
-        stations: true
+        station: true
       },
       where: {
-        stations: {
+        station: {
           id: stationId
         }
       }
@@ -110,24 +110,13 @@ export class CustomerRepository {
     return this.getCustomerById(id);
   }
 
-  /**
-   * Delete customer
-   * @param id Customer ID
-   */
-  public async deleteCustomer(id: string): Promise<void> {
+   public async deleteCustomer(id: string): Promise<void> {
     const exists = await this.entities.findOneBy({ id });
     if (!exists) {
       throw new NotFoundException(`Customer with ID ${id} not found`);
     }
 
-    // Remove all station associations first (using query builder for better control)
-    await this.entities
-      .createQueryBuilder()
-      .relation(Customer, 'stations')
-      .of(id)
-      .remove(await this.getStationIdsForCustomer(id));
-
-    // Delete the customer
+    // Delete the customer (no need to handle junction table)
     await this.entities.delete(id);
   }
 
@@ -136,11 +125,11 @@ export class CustomerRepository {
    * @param customerId Customer ID
    * @param stationId Station ID
    */
-  public async addStationToCustomer(customerId: string, stationId: string): Promise<Customer | null> {
+  public async assignStationToCustomer(customerId: string, stationId: string): Promise<Customer | null> {
     // Verify customer exists
     const customer = await this.entities.findOne({
       where: { id: customerId },
-      relations: { stations: true }
+      relations: { station: true }
     });
 
     if (!customer) {
@@ -153,50 +142,28 @@ export class CustomerRepository {
       throw new NotFoundException(`Station with ID ${stationId} not found`);
     }
 
-    // Check if relationship already exists
-    const isAlreadyAssociated = customer.stations?.some(s => s.id === stationId);
-    if (isAlreadyAssociated) {
-      throw new ConflictException(`Customer ${customerId} is already associated with station ${stationId}`);
-    }
-
-    // Use query builder to add the relationship
-    await this.entities
-      .createQueryBuilder()
-      .relation(Customer, 'stations')
-      .of(customerId)
-      .add(stationId);
+    // Update customer's station
+    await this.entities.update(customerId, { stationId });
 
     return this.getCustomerById(customerId);
   }
 
   /**
    * Remove station from customer
-   * @param customerId Customer ID
-   * @param stationId Station ID
    */
-  public async removeStationFromCustomer(customerId: string, stationId: string): Promise<Customer | null> {
+  public async removeStationFromCustomer(customerId: string): Promise<Customer | null> {
     // Verify customer exists
     const customer = await this.entities.findOne({
       where: { id: customerId },
-      relations: { stations: true }
+      relations: { station: true }
     });
 
     if (!customer) {
       throw new NotFoundException(`Customer with ID ${customerId} not found`);
     }
 
-    // Check if relationship exists
-    const isAssociated = customer.stations?.some(s => s.id === stationId);
-    if (!isAssociated) {
-      throw new NotFoundException(`Customer ${customerId} is not associated with station ${stationId}`);
-    }
-
-    // Remove the relationship
-    await this.entities
-      .createQueryBuilder()
-      .relation(Customer, 'stations')
-      .of(customerId)
-      .remove(stationId);
+    // Remove station assignment
+    await this.entities.update(customerId, { stationId: undefined });
 
     return this.getCustomerById(customerId);
   }
@@ -207,13 +174,13 @@ export class CustomerRepository {
    * @returns Promise<string[]>
    * @private
    */
-  private async getStationIdsForCustomer(customerId: string): Promise<string[]> {
+  public async getStationIdsForCustomer(customerId: string): Promise<string> {
     const customer = await this.entities.findOne({
       where: { id: customerId },
-      relations: { stations: true }
+      relations: { station: true }
     });
 
-    return customer?.stations?.map(s => s.id) || [];
+    return customer?.station ?.id || "";
   }
 
   /**
@@ -221,7 +188,7 @@ export class CustomerRepository {
    * @param customerId Customer ID
    * @param stationIds Array of station IDs
    */
-  public async updateCustomerStations(customerId: string, stationIds: string[]): Promise<void> {
+  public async updateCustomerStation(customerId: string, stationId: string): Promise<void> {
     // Verify customer exists
     const customer = await this.entities.findOne({ where: { id: customerId } });
     if (!customer) {
@@ -229,12 +196,12 @@ export class CustomerRepository {
     }
 
     // Verify all stations exist
-    for (const stationId of stationIds) {
-      const station = await this.stationEntities.findOne({ where: { id: stationId } });
-      if (!station) {
-        throw new NotFoundException(`Station with ID ${stationId} not found`);
-      }
+   
+    const station = await this.stationEntities.findOne({ where: { id: stationId } });
+    if (!station) {
+      throw new NotFoundException(`Station with ID ${stationId} not found`);
     }
+  
 
     // Get current station IDs
     const currentStationIds = await this.getStationIdsForCustomer(customerId);
@@ -243,18 +210,18 @@ export class CustomerRepository {
     if (currentStationIds.length > 0) {
       await this.entities
         .createQueryBuilder()
-        .relation(Customer, 'stations')
+        .relation(Customer, 'station')
         .of(customerId)
         .remove(currentStationIds);
     }
 
     // Add new relationships
-    if (stationIds.length > 0) {
+    if (stationId) {
       await this.entities
         .createQueryBuilder()
-        .relation(Customer, 'stations')
+        .relation(Customer, 'station')
         .of(customerId)
-        .add(stationIds);
+        .add(stationId);
     }
   }
 
@@ -267,7 +234,7 @@ export class CustomerRepository {
     if (stationIds.length > 0) {
       await this.entities
         .createQueryBuilder()
-        .relation(Customer, 'stations')
+        .relation(Customer, 'station')
         .of(customerId)
         .remove(stationIds);
     }
@@ -285,7 +252,7 @@ export class CustomerRepository {
     for (const customer of customers) {
       await this.entities
         .createQueryBuilder()
-        .relation(Customer, 'stations')
+        .relation(Customer, 'station')
         .of(customer.id)
         .remove(stationId);
     }

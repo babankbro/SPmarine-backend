@@ -9,14 +9,14 @@ interface CreateCustomerData {
   name: string;
   email: string;
   address: string;
-  stationIds?: string[];
+  stationId?: string;
 }
 
 interface UpdateCustomerData {
   name?: string;
   email?: string;
   address?: string;
-  stationIds?: string[];
+  stationId?: string;
 }
 
 @Injectable()
@@ -80,22 +80,20 @@ export class CustomerService {
       name: customerData.name.trim(),
       email: customerData.email.toLowerCase().trim(),
       address: customerData.address.trim(),
+      stationId: customerData.stationId ? customerData.stationId.trim() : undefined
     });
+
+    console.log(`Customer created: ${JSON.stringify(customer)}`);
 
     if (!customer) {
       throw new Error('Failed to create customer');
     }
 
     // Add station associations if provided
-    if (customerData.stationIds && customerData.stationIds.length > 0) {
-      for (const stationId of customerData.stationIds) {
-        try {
-          await this.repository.addStationToCustomer(customer.id, stationId);
-        } catch (error) {
-          console.warn(`Failed to add station ${stationId} to customer ${customer.id}:`, error);
-        }
-      }
-      
+    // Update station associations if provided
+    if (customerData.stationId !== undefined) {
+      await this.updateCustomerStation(customerData.id, customerData.stationId);
+    
       // Return updated customer with stations
       return await this.repository.getCustomerById(customer.id);
     }
@@ -139,15 +137,18 @@ export class CustomerService {
     if (customerData.email !== undefined) updateData.email = customerData.email.toLowerCase().trim();
     if (customerData.address !== undefined) updateData.address = customerData.address.trim();
 
+    // Update station associations if provided
+    if (customerData.stationId !== undefined) {
+      await this.updateCustomerStation(id, customerData.stationId);
+    }
+
+
     // Update customer basic info if there are changes
     if (Object.keys(updateData).length > 0) {
       await this.repository.updateCustomer(id, updateData);
     }
 
-    // Update station associations if provided
-    if (customerData.stationIds !== undefined) {
-      await this.updateCustomerStations(id, customerData.stationIds);
-    }
+    
 
     // Return updated customer with stations
     return await this.repository.getCustomerById(id);
@@ -182,12 +183,12 @@ export class CustomerService {
     }
 
     // Check if association already exists
-    const isAlreadyAssociated = customer.stations?.some(s => s.id === stationId);
+    const isAlreadyAssociated = customer.station != null;
     if (isAlreadyAssociated) {
       throw new ConflictException(`Customer ${customerId} is already associated with station ${stationId}`);
     }
 
-    return await this.repository.addStationToCustomer(customerId, stationId);
+    return await this.repository.assignStationToCustomer(customerId, stationId);
   }
 
   /**
@@ -204,33 +205,34 @@ export class CustomerService {
     }
 
     // Check if association exists
-    const isAssociated = customer.stations?.some(s => s.id === stationId);
+    const isAssociated = customer.station != null;
     if (!isAssociated) {
       throw new NotFoundException(`Customer ${customerId} is not associated with station ${stationId}`);
     }
 
-    return await this.repository.removeStationFromCustomer(customerId, stationId);
+    return await this.repository.removeStationFromCustomer(customerId);
   }
 
   /**
    * Update all station associations for a customer
    * @param customerId Customer ID
-   * @param stationIds Array of station IDs
+   * @param stationId Array of station IDs
    * @private
    */
-  private async updateCustomerStations(customerId: string, stationIds: string[]): Promise<void> {
+  private async updateCustomerStation(customerId: string, stationId: string): Promise<void> {
     const customer = await this.repository.getCustomerById(customerId);
     if (!customer) {
       throw new NotFoundException(`Customer with ID ${customerId} not found`);
     }
 
-    const currentStationIds = customer.stations?.map(s => s.id) || [];
+    console.log(`Updating stations for customer ${customerId} with station ${stationId}`);
+    const currentStationIds = await this.repository.getStationIdsForCustomer(customerId);
     
     // Remove stations that are no longer in the list
     for (const currentStationId of currentStationIds) {
-      if (!stationIds.includes(currentStationId)) {
+      if (!stationId.includes(currentStationId)) {
         try {
-          await this.repository.removeStationFromCustomer(customerId, currentStationId);
+          await this.repository.removeStationFromCustomer(customerId);
         } catch (error) {
           console.warn(`Failed to remove station ${currentStationId} from customer ${customerId}:`, error);
         }
@@ -238,14 +240,14 @@ export class CustomerService {
     }
 
     // Add new stations
-    for (const stationId of stationIds) {
-      if (!currentStationIds.includes(stationId)) {
-        try {
-          await this.repository.addStationToCustomer(customerId, stationId);
-        } catch (error) {
-          console.warn(`Failed to add station ${stationId} to customer ${customerId}:`, error);
-        }
+   
+    if (!currentStationIds.includes(stationId)) {
+      try {
+        await this.repository.assignStationToCustomer(customerId, stationId);
+      } catch (error) {
+        console.warn(`Failed to add station ${stationId} to customer ${customerId}:`, error);
       }
     }
+    
   }
 }
