@@ -1,5 +1,5 @@
 import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { Station } from './station.entity'; // Make sure to create this Station entity if it doesn't exist
+import { Station } from './station.entity';
 
 @Entity('Tugboat')
 export class Tugboat {
@@ -39,9 +39,15 @@ export class Tugboat {
   @Column({ type: 'datetime', nullable: true })
   readyDatetime?: Date;
 
+  // Keep the original column for database compatibility
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  stationId?: string;
+
   // Add the relation to Station entity
-  @ManyToOne(() => Station, station => station.tugboats)
-  @JoinColumn({ name: 'stationId' }) // This tells TypeORM which column to use for the join
-  station: Station;
-  
+  @ManyToOne(() => Station, station => station.tugboats, {
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE'
+  })
+  @JoinColumn({ name: 'stationId' })
+  station?: Station;
 }
