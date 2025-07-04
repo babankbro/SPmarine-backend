@@ -22,6 +22,11 @@ export class StationRepository {
    */
   public async getStations(): Promise<Station[]> {
     return this.entities.find({
+      relations: {
+        barges: true,
+        tugboats: true,
+        customers: true
+      },
       order: {
         name: 'ASC'
       }
@@ -39,7 +44,9 @@ export class StationRepository {
       relations: {
         barges: true,
         tugboats: true,
-        customers: true
+        customers: true,
+        start_stations: true,
+        dest_stations: true
       }
     });
     
@@ -55,7 +62,7 @@ export class StationRepository {
    * @param station Station data
    * @returns Promise<Station>
    */
-  public async createStation(station: Partial<Station>): Promise<Station| null> {
+  public async createStation(station: Partial<Station>): Promise<Station | null> {
     // Check if station ID already exists
     const existingStation = await this.entities.findOne({ 
       where: { id: station.id } 
@@ -77,7 +84,7 @@ export class StationRepository {
    * @param id Station ID
    * @param body Station data
    */
-  public async updateStation(id: string, body: Partial<Station>): Promise<Station| null> {
+  public async updateStation(id: string, body: Partial<Station>): Promise<Station | null> {
     const exists = await this.entities.findOneBy({ id });
     if (!exists) {
       throw new NotFoundException(`Station with ID ${id} not found`);
@@ -183,6 +190,11 @@ export class StationRepository {
   public async getStationsByType(type: 'SEA' | 'RIVER'): Promise<Station[]> {
     return this.entities.find({
       where: { type },
+      relations: {
+        barges: true,
+        tugboats: true,
+        customers: true
+      },
       order: {
         name: 'ASC'
       }
@@ -197,26 +209,54 @@ export class StationRepository {
   public async getStationsWithinDistance(maxDistance: number): Promise<Station[]> {
     return this.entities
       .createQueryBuilder('station')
+      .leftJoinAndSelect('station.barges', 'barges')
+      .leftJoinAndSelect('station.tugboats', 'tugboats')
+      .leftJoinAndSelect('station.customers', 'customers')
       .where('station.distanceKm <= :maxDistance', { maxDistance })
       .orderBy('station.distanceKm', 'ASC')
       .getMany();
   }
-
-  /**
-   * Search stations by name
-   * @param searchTerm Search term
-   * @returns Promise<Station[]>
-   */
   public async searchStationsByName(searchTerm: string): Promise<Station[]> {
     return this.entities
       .createQueryBuilder('station')
+      .leftJoinAndSelect('station.barges', 'barges')
+      .leftJoinAndSelect('station.tugboats', 'tugboats')
+      .leftJoinAndSelect('station.customers', 'customers')
       .where('station.name LIKE :searchTerm', { searchTerm: `%${searchTerm}%` })
       .orderBy('station.name', 'ASC')
       .getMany();
   }
 
+  /**
+   * Get station statistics
+   * @returns Promise<any>
+   */
+  public async getStationStatistics(): Promise<any> {
+    const queryBuilder = this.entities.createQueryBuilder('station');
+    
+    const result = await queryBuilder
+      .select([
+        'COUNT(*) as total',
+        'SUM(CASE WHEN station.type = "SEA" THEN 1 ELSE 0 END) as seaStations',
+        'SUM(CASE WHEN station.type = "RIVER" THEN 1 ELSE 0 END) as riverStations',
+        'AVG(station.distanceKm) as averageDistance',
+        'MAX(station.distanceKm) as maxDistance',
+        'MIN(station.distanceKm) as minDistance'
+      ])
+      .getRawOne();
+
+    return {
+      total: parseInt(result.total) || 0,
+      seaStations: parseInt(result.seaStations) || 0,
+      riverStations: parseInt(result.riverStations) || 0,
+      averageDistance: parseFloat(result.averageDistance) || 0,
+      maxDistance: parseFloat(result.maxDistance) || 0,
+      minDistance: parseFloat(result.minDistance) || 0,
+    };
+  }
+
   // Legacy method names for backward compatibility
-  public async createNewStation(station: Station): Promise<Station| null> {
+  public async createNewStation(station: Station): Promise<Station | null> {
     return this.createStation(station);
   }
 

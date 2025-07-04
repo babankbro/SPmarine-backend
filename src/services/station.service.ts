@@ -107,7 +107,7 @@ export class StationService {
    * @param stationData Station data
    * @returns Promise<Station>
    */
-  public async updateStation(id: string, stationData: UpdateStationData): Promise<Station| null> {
+  public async updateStation(id: string, stationData: UpdateStationData): Promise<Station | null> {
     // Check if station exists
     const existingStation = await this.repository.getStationById(id);
     if (!existingStation) {
@@ -218,25 +218,7 @@ export class StationService {
     maxDistance: number;
     minDistance: number;
   }> {
-    const stations = await this.repository.getStations();
-    
-    const stats = {
-      total: stations.length,
-      seaStations: stations.filter(s => s.type === 'SEA').length,
-      riverStations: stations.filter(s => s.type === 'RIVER').length,
-      averageDistance: 0,
-      maxDistance: 0,
-      minDistance: 0,
-    };
-
-    if (stations.length > 0) {
-      const distances = stations.map(s => s.distanceKm);
-      stats.averageDistance = distances.reduce((sum, d) => sum + d, 0) / distances.length;
-      stats.maxDistance = Math.max(...distances);
-      stats.minDistance = Math.min(...distances);
-    }
-
-    return stats;
+    return await this.repository.getStationStatistics();
   }
 
   /**
