@@ -6,10 +6,12 @@ import { OrderRepository } from '@/repositories/order.repository';
 import { OrderService } from '@/services/order.service';
 import { Order } from '@/entities/order.entity';
 import { Station } from '@/entities/station.entity';
+import { Customer } from '@/entities/customer.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Order, Station ])],
+  imports: [TypeOrmModule.forFeature([Order, Station, Customer])],
   controllers: [OrderController],
   providers: [OrderService, OrderRepository],
+  exports: [OrderService, OrderRepository],
 })
 export class OrderModule {}

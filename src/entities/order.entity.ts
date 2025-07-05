@@ -16,11 +16,11 @@ export class Order {
   @Column({ type: 'enum', enum: OrderType })
   type: OrderType;
 
-  @Column({ type: 'varchar', length: 255 })
-  fromPoint: string;
+  @Column({ name: 'fromEntityId', type: 'varchar', length: 255 })
+  fromEntityId: string;
 
-  @Column({ type: 'varchar', length: 255 })
-  destPoint: string;
+  @Column({ name: 'destEntityId', type: 'varchar', length: 255 })
+  destEntityId: string;
 
   @Column({ name: 'startStationId', type: 'varchar', length: 255, nullable: true })
   startStationId: string;
@@ -39,9 +39,6 @@ export class Order {
   @JoinColumn({ name: 'destStationId', referencedColumnName: 'id' })
   dest_station: Station;
 
-  @ManyToOne(() => Customer, customer => customer.address)
-  @JoinColumn({ name: 'destPoint', referencedColumnName: 'id' })
-  customer: Customer;
 
   @Column({ type: 'varchar', length: 255 })
   productName: string;
