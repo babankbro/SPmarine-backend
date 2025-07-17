@@ -45,7 +45,7 @@ export class OrderRepository {
 
     if (filters?.search) {
       queryBuilder.andWhere(
-        '(order.id LIKE :search OR order.productName LIKE :search OR order.fromPoint LIKE :search OR order.destPoint LIKE :search)',
+        '(order.id LIKE :search OR order.productName LIKE :search OR order.fromEntityId   LIKE :search OR order.destEntityId  LIKE :search)',
         { search: `%${filters.search}%` }
       );
     }
@@ -208,6 +208,9 @@ export class OrderRepository {
         (updateData as any)[`timeReadyCR${i}`] = Number(body[`timeReadyCR${i}`]);
       }
     }
+
+    console.log("Update data:", updateData, body);
+    
     await this.entities.update(id, updateData);
     
     // Return updated order with relations

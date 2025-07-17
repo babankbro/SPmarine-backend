@@ -29,6 +29,9 @@ export class Station {
   @Column({ type: 'float' })
   public distanceKm: number;
 
+  @Column({ type: 'varchar', length: 255 })
+  public stationType: string;
+
   // @Column({ type: 'varchar', length: 255 })
   // public customerId: string;
   

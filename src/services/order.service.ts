@@ -29,6 +29,8 @@ interface CreateOrderData {
   cr5?: number;
   cr6?: number;
   cr7?: number;
+  cr8?: number;
+  cr9?: number;
   timeReadyCR1?: number;
   timeReadyCR2?: number;
   timeReadyCR3?: number;
@@ -36,6 +38,8 @@ interface CreateOrderData {
   timeReadyCR5?: number;
   timeReadyCR6?: number;
   timeReadyCR7?: number;
+  timeReadyCR8?: number;
+  timeReadyCR9?: number;
 }
 
 interface UpdateOrderData {
@@ -56,6 +60,8 @@ interface UpdateOrderData {
   cr5?: number;
   cr6?: number;
   cr7?: number;
+  cr8?: number;
+  cr9?: number;
   timeReadyCR1?: number;
   timeReadyCR2?: number;
   timeReadyCR3?: number;
@@ -63,6 +69,8 @@ interface UpdateOrderData {
   timeReadyCR5?: number;
   timeReadyCR6?: number;
   timeReadyCR7?: number;
+  timeReadyCR8?: number;
+  timeReadyCR9?: number;
 }
 
 @Injectable()
@@ -123,8 +131,8 @@ export class OrderService {
     const order = await this.repository.createOrder({
       id: orderData.id,
       type: orderData.type.toUpperCase(),
-      fromPoint: orderData.fromEntityId.trim(),
-      destPoint: orderData.destEntityId.trim(),
+      fromEntityId: orderData.fromEntityId.trim(),
+      destEntityId: orderData.destEntityId.trim(),
       startStationId: orderData.startStationId?.trim(),
       destStationId: orderData.destStationId?.trim(),
       productName: orderData.productName.trim(),
@@ -190,7 +198,7 @@ export class OrderService {
     const updatedOrder = await this.repository.updateOrder(id, {
       type: orderData.type?.toUpperCase(),
       fromEntityId: orderData.fromEntityId?.trim(),
-      destEnitityId: orderData.destEntityId?.trim(),
+      destEntityId: orderData.destEntityId?.trim(),
       startStationId: orderData.startStationId?.trim(),
       destStationId: orderData.destStationId?.trim(),
       productName: orderData.productName?.trim(),
@@ -205,6 +213,8 @@ export class OrderService {
       cr5: orderData.cr5,
       cr6: orderData.cr6,
       cr7: orderData.cr7,
+      cr8: orderData.cr8,
+      cr9: orderData.cr9,
       timeReadyCR1: orderData.timeReadyCR1,
       timeReadyCR2: orderData.timeReadyCR2,
       timeReadyCR3: orderData.timeReadyCR3,
@@ -212,6 +222,8 @@ export class OrderService {
       timeReadyCR5: orderData.timeReadyCR5,
       timeReadyCR6: orderData.timeReadyCR6,
       timeReadyCR7: orderData.timeReadyCR7,
+      timeReadyCR8: orderData.timeReadyCR8,
+      timeReadyCR9: orderData.timeReadyCR9
     });
 
     console.log(`Order updated: ${JSON.stringify(updatedOrder)}`);

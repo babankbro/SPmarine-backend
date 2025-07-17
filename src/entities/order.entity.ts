@@ -77,6 +77,13 @@ export class Order {
   cr7: number;
 
   @Column('float')
+  cr8: number;
+
+  @Column('float')
+  cr9: number;
+
+
+  @Column('float')
   timeReadyCR1: number;
 
   @Column('float')
@@ -96,4 +103,10 @@ export class Order {
 
   @Column('float')
   timeReadyCR7: number;
+
+  @Column('float')
+  timeReadyCR8: number;
+
+  @Column('float')
+  timeReadyCR9: number;
 }
