@@ -6,16 +6,16 @@ import * as path from 'path';
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: process.env.DB_HOST || '62.72.30.12',
-      port: Number(process.env.DB_PORT) || 18306,
-      username: process.env.DB_USER || 'maria',
-      password: process.env.DB_PASSWORD || 'password',
-      database: process.env.DB_NAME || 'spinterdb',
+      host: process.env.DB_HOST || '45.82.72.96',
+      port: Number(process.env.DB_PORT) || 3306,
+      username: process.env.DB_USER || 'spmarine_maria',
+      password: process.env.DB_PASSWORD || 'P@ssw0rd12345',
+      database: process.env.DB_NAME || 'spmarine_db',
       entities: [path.join(__dirname, '/../**/*.entity.{js,ts}')],
-      ssl: {
-        // Enable SSL if required
-        rejectUnauthorized: false, // Use this only for development
-      },
+      // ssl: {
+      //   // Enable SSL if required
+      //   rejectUnauthorized: true, // Use this only for development
+      // },
       extra: {
         // Additional MySQL driver options
         connectionLimit: 10,
